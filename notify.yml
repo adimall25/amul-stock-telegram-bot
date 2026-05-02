@@ -1,0 +1,50 @@
+name: Scan & Notify
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour at :00
+  workflow_dispatch:        # manual trigger from the GitHub Actions UI
+
+jobs:
+  scan:
+    name: Scan stock
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright + Chromium
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Run scanner
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: python scanner.py
+
+  notify:
+    name: Notify users
+    runs-on: ubuntu-latest
+    needs: scan          # only runs after scan job succeeds
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run notify
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: python notify.py

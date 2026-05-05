@@ -66,8 +66,6 @@ def build_available_message(product: dict, pincode: str) -> str:
         f"🟢 *{product['name']}* is now available for delivery!",
         f"📍 Pincode: {pincode}",
     ]
-    if product.get("description"):
-        lines.append(f"_{product['description']}_")
     lines.append("")
     if product.get("url"):
         lines.append(f"🛒 Order here:\n{product['url']}")

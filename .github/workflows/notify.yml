@@ -2,7 +2,7 @@ name: Scan & Notify
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every hour at :00
+    - cron: "*/30 * * * *"   # every hour at :00
   workflow_dispatch:        # manual trigger from the GitHub Actions UI
 
 jobs:
